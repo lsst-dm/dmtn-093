@@ -18,6 +18,8 @@ doc_title: 'Design of the LSST Alert Distribution System'
 # Author names, ordered as a list. Each author name should be formatted as 'First Last'
 authors:
     - 'Maria Patterson'
+    - 'Eric Bellm'
+    - 'John Swinbank'
 
 # Current document revision date, YYYY-MM-DD
 # Only set this field if you need to manually fix the revision date;
