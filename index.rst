@@ -219,7 +219,7 @@ Deployment
 ===========
 
 The deployment of the alert distribution and mini-broker described here differs
-from the prototype described in `DMTN-081 <https://dmtn-081.lsst.io>`_
+from the prototype described in DMTN-081
 :cite:`DMTN-081`
 and has been revised with significant improvement in design.
 DMTN-081 describes a system in which groups of filters are deployed
