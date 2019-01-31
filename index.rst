@@ -132,7 +132,7 @@ The producer used for generating and sending data to Kafka and
 template scripts for consumers of the stream are provided in the GitHub
 repository at https://github.com/lsst-dm/alert_stream,
 which can also be built as a Docker image and deployed as containers.
-DMTN-028 <https://dmtn-028.lsst.io>`_ :cite:`DMTN-028`
+DMTN-028 :cite:`DMTN-028`
 provides details about benchmarking deployment of the different components.
 
 Alert Filtering
