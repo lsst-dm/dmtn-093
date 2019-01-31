@@ -10,94 +10,92 @@ Abstract
 
 We describe the design and implementation of the LSST Alert Distribution System, which provides rapid dissemination of alerts as well as simple filtering.
 
-
-
 Alert Serialization
 ===================
 
+Packet Format
+-------------
+
 Alerts are packaged using Apache Avro :cite:`avro`.
 Avro is a framework for data serialization in a compact binary format.
-It has been used at scale in both industry and science, and it is the
-recommended format for data streamed with Apache Kafka.
-Avro is more structured in format than JSON or XML, the currently used
-format of VOEvent 2.0.
-Libraries for reading and writing Avro are available in many languages,
-including Python.
+It has been used at scale in both industry and science, and it is the recommended format for data streamed with Apache Kafka.
+Avro is more structured in format than JSON or XML, the currently used format of VOEvent 2.0.
+Furthermore, image — or other — files can be embedded in Avro packets, making it possible to embed postage stamp cutouts of detected difference image sources in a much more compact and convenient way than the current VOEvent standard.
+Libraries for reading and writing Avro are available in many languages, including Python.
 
-To create an Avro alert packet, data is serialized using a JSON schema,
-which defines the data types for each field.
-Strict adherence to the schema ensures that data will be correctly
-interpreted upon receipt.
-Alerts in Avro format can be shipped with or without a schema embedded.
-Excluding the schema allow alerts to be more lightweight.
-However, passing alerts without a schema embedded means that an
-appropriate schema fitting the data is needed upon receipt to interpret the data.
-Any changes to the schema must be coordinated with downstream readers.
-The schema used for deserializing packets can also be different from the
-schema used for writing, which enables receivers to easily remove
-or add new fields.
-Files can be included in Avro packets as data type "bytes," making it
-possible to embed postage stamp cutouts of detected difference image
-sources in a much more compact way than the current VOEvent standard.
+Each alert is packaged as its own Avro packet, as opposed to wrapping groups of alerts per visit together.
+As alerts are anticipated to arrive independently from the end of the Alert Generation Pipeline parallelized by CCD, the Kafka platform (see :ref:`alertDist`) acts as a cache before distribution, and individually packaged alerts makes this process simple.
+Additionally, packaging alerts separately allows filters to take individual alerts as input and pass each alert independently without having to repackage groups, which makes chaining filters straightforward.
 
-Each alert is packaged as its own Avro packet, as opposed to wrapping
-groups of alerts per visit together.
-As alerts are anticipated to arrive independently from the end of
-the science pipelines parallelized by CCD, the Kafka platform
-acts as a cache before distribution, and individually packaged alerts
-makes this process simple.
-Additionally, packaging alerts separately allows filters to take
-as input an individual alert and pass each alert independently
-without having to repackage groups, which makes chaining filters
-straightforward.
+Alert Schemata
+--------------
 
-Avro schemas can be composed of nested sub-schemas under a top
-level namespace.
-Nesting simplifies what would otherwise be monolithic schemas
-as new fields are added.
-For example, the base alert schema (``lsst.alert``) is of type
-"record" and includes previous detections of DIA sources as an array
-of type ``lsst.alert.diaSource``.
+Purpose and Structure
+^^^^^^^^^^^^^^^^^^^^^
 
-The following shows the top level alert schema:
+Avro alert packets are composed of opaque binary data.
+Interpretation of this data is done according to a *schema*, which defines the type and structure of each field within the packet.
+Strict adherence to the schema ensures that data will be correctly interpreted upon receipt.
 
-.. code-block:: JSON
+Avro schemas can be composed of nested sub-schemas under a top level namespace.
+Nesting simplifies what would otherwise be monolithic schemas as new fields are added.
+For example, the base alert schema (``lsst.alert``) is of type "record" and includes previous detections of DIA sources as an array of type ``lsst.alert.diaSource``.
 
-  {
-	"namespace": "lsst",
-	"type": "record",
-	"name": "alert",
-	"doc": "sample avro alert schema v1.0",
-	"fields": [
-		{"name": "alertId", "type": "long", "doc": "add descriptions like this"},
-		{"name": "l1dbId", "type": "long"},
-		{"name": "diaSource", "type": "lsst.alert.diaSource"},
-		{"name": "prv_diaSources", "type": [{
-				"type": "array",
-				"items": "lsst.alert.diaSource"}, "null" ], "default": null},
-		{"name": "Object", "type": ["lsst.Object", "null"], "default": null},
-		{"name": "ssObject", "type": ["lsst.ssObject", "null"], "default": null},
-		{"name": "ObjectL2", "type": ["lsst.Object", "null"], "default": null},
-		{"name": "diaSourcesL2", "type": [{
-				"type": "array",
-				"items": "lsst.alert.diaSource"}, "null"], "default": null},
-		{"name": "cutoutDifference", "type": ["lsst.alert.cutout", "null"], "default": null},
-		{"name": "cutoutTemplate", "type": ["lsst.alert.cutout", "null"], "default": null}
-	           ]
-  }
+The current schema proposed for use with LSST alerts is stored in the `lsst-dm/sample-avro-alert`_ repository.
+This contains all fields specified by the LSST Data Products Definition Document (LSE-163; :cite:`LSE-163`).
+At this stage in construction, this schema should be regarded as exploratory and subject to rapid change; as we move closer to the operational era, a change control process will be implemented.
 
+.. _lsst-dm/sample-avro-alert: https://github.com/lsst-dm/sample-avro-alert
 
-Full schemas for LSST alerts which contain all fields specified by the
-Data Products Definition Document (LSE-163, DPDD :cite:`LSE-163`)
-can be found in the GitHub repository at
-https://github.com/lsst-dm/sample-avro-alert.
-The fields and naming conventions were chosen to mirror fields in
-the LSST ``cat`` package.
-Avro files with realistic data generated by the Simulations team
-follow these schemas and are available in the data directory of the
-GitHub repository at https://github.com/lsst-dm/alert_stream.
+Management and Evolution
+^^^^^^^^^^^^^^^^^^^^^^^^
 
+Avro packets may be shipped with or without an embedded schema.
+Since the schema can be lengthy, and since each alert will be packaged for shipping separately, we expect to distribute alerts separately from the associated schema.
 
+The recipient of each packet requires a schema to interpret the data they have been sent.
+In the simplest model, the producer (the LSST Alert Distribution System) and the consumer (the remote broker or science user) simply agree on the schema prior to the start of the stream.
+In practice, however, this is impractical: over the course of LSST operations, we anticipate that the alert schema will evolve in response to changing technical and scientific requirements.
+At the same time, this change must be managed so as to cause minimum disruption to consumers.
+
+Given the concerns above, we expect to adopt the following protocol:
+
+- The LSST Project will host an instance of the `Confluent Schema Registry`_.
+  All alert schemata ever used operationally by LSST will be recorded in this registry.
+  Schemata may be retrieved from the registry given a four-byte schema ID.
+- Alerts will be transmitted following the `Confluent Wire Format`_.
+  That is, the alert data encoded in Avro format will be prepended with a “magic byte” indicating the version of the wire format in use and a the four-byte schema ID.
+- On receipt of an alert packet, the consumer can retrieve the appropriate schema from the registry before attempting to interpret the packet.
+  (Consumers are expected to cache the schema, rather than requesting a fresh copy of it for every packet received!)
+
+LSST alert schemata will follow a ``MAJOR.MINOR`` versioning scheme.
+
+Within a given ``MAJOR`` version, schemata will follow the ``FORWARD_TRANSITIVE`` type of `Confluent compatibility model`_.
+In this model, data produced by a newer schema can be interpreted by a consumer using an older schema.
+The producer may add fields to the schema (which will not be seen by the consumer) and may delete *optional* fields (in which case the consumer will see the defaut value).
+In this way, LSST may add to or augment the contents of alert packets without impacting consumers (of course, consumers who wish to take advantage of the new information available will have to upgrade their systems to match the new schema).
+All such additions or augmentations to the schema will result in a new ``MINOR`` version being generated.
+
+In some cases, a break with compatibility may be required (for example, when some particular data product is rendered obsolete, deleting the corresponding field from the alert schema will break the ``FORWARD_TRANSITIVE`` compatibility guarantee).
+Such a break with compatibility will be signified by the release of a new ``MAJOR`` version of the schema.
+Issuing a new ``MAJOR`` version of the schema will require action on the part of consumers: some data on which they may be relying is no longer available.
+Consumers will have to update their systems to continue following the alert stream.
+
+The Confluent Schema Registry makes it possible for schemata to evolve within a given *subject name* while enforcing the specified compatibility model.
+Thus, a given ``MAJOR`` version of the schema may be published with a particular subject name (for example, ``lsst-alert-N`` for ``MAJOR`` version ``N``); releasing a new major version will necessitate defining a new subject.
+
+.. _Confluent Schema Registry: https://docs.confluent.io/current/schema-registry/docs/index.html
+.. _Confluent Wire Format: https://docs.confluent.io/current/schema-registry/docs/serializer-formatter.html#wire-format
+.. _Confluent compatibility model: https://docs.confluent.io/current/schema-registry/docs/avro.html#forward-compatibility
+
+Example Data
+^^^^^^^^^^^^
+
+Avro files with realistic data generated by the Simulations team follow these schemas and are available in the :file:`data/` directory of `lsst-dm/alert_stream`_ repository.
+
+.. _lsst-dm/alert_stream: https://github.com/lsst-dm/alert_stream
+
+.. _alertDist:
 
 Alert Distribution
 ==================
