@@ -210,10 +210,10 @@ DMS-REQ-0343 notes that the requirement could also be satisfied
 by cutting down the content of filtered alerts and potentially
 removing fields to decrease the size of filtered streams.
 
-
-
 Alert Database
 ==============
+
+Coming in a future edition of this document.
 
 Deployment
 ===========
