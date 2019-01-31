@@ -72,7 +72,7 @@ LSST alert schemata will follow a ``MAJOR.MINOR`` versioning scheme.
 
 Within a given ``MAJOR`` version, schemata will follow the ``FORWARD_TRANSITIVE`` type of `Confluent compatibility model`_.
 In this model, data produced by a newer schema can be interpreted by a consumer using an older schema.
-The producer may add fields to the schema (which will not be seen by the consumer) and may delete *optional* fields (in which case the consumer will see the defaut value).
+The producer may add fields to the schema (which will not be seen by the consumer) and may delete *optional* fields (in which case the consumer will see the default value).
 In this way, LSST may add to or augment the contents of alert packets without impacting consumers (of course, consumers who wish to take advantage of the new information available will have to upgrade their systems to match the new schema).
 All such additions or augmentations to the schema will result in a new ``MINOR`` version being generated.
 
