@@ -61,11 +61,11 @@ At the same time, this change must be managed so as to cause minimum disruption 
 
 Given the concerns above, we expect to adopt the following protocol:
 
-- The LSST Project will host an instance of the `Confluent Schema Registry`_.
-  All alert schemata ever used operationally by LSST will be recorded in this registry.
-  Schemata may be retrieved from the registry given a four-byte schema ID.
+- The LSST Project will make available a registry of all alert schemata ever used operationally by LSST.
+  Schemata may be retrieved from this registry by some convenient interface given a four-byte schema ID.
+  Conceptually, this is equivalent to the `Confluent Schema Registry`_, although it is possible an alternative implementation will be deployed in practice.
 - Alerts will be transmitted following the `Confluent Wire Format`_.
-  That is, the alert data encoded in Avro format will be prepended with a “magic byte” indicating the version of the wire format in use and a the four-byte schema ID.
+  That is, the alert data encoded in Avro format will be prepended with a “magic byte” indicating the version of the wire format in use and the four-byte schema ID.
 - On receipt of an alert packet, the consumer can retrieve the appropriate schema from the registry before attempting to interpret the packet.
   (Consumers are expected to cache the schema, rather than requesting a fresh copy of it for every packet received!)
 
