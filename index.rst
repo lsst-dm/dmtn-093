@@ -8,7 +8,8 @@
 Abstract
 =========
 
-We describe the design and implementation of the LSST Alert Distribution System, which provides rapid dissemination of alerts as well as simple filtering.
+We describe the proposed design and implementation of the LSST Alert Distribution Serice, which provides rapid dissemination of alerts as well as the capability to apply simple filters to alert streams.
+At time of writing, this service is still under development; this “living document” describes current thinking, but is expected to evolve over the course of LSST construction.
 
 Alert Serialization
 ===================
