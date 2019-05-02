@@ -28,8 +28,8 @@ Each alert is packaged as its own Avro packet, as opposed to wrapping groups of 
 As alerts are anticipated to arrive independently from the end of the Alert Generation Pipeline parallelized by CCD, the Kafka platform (see :ref:`alertDist`) acts as a cache before distribution, and individually packaged alerts makes this process simple.
 Additionally, packaging alerts separately allows filters to take individual alerts as input and pass each alert independently without having to repackage groups, which makes chaining filters straightforward.
 
-Alert Schemata
---------------
+Alert Schemas
+-------------
 
 Purpose and Structure
 ^^^^^^^^^^^^^^^^^^^^^
@@ -61,17 +61,17 @@ At the same time, this change must be managed so as to cause minimum disruption 
 
 Given the concerns above, we expect to adopt the following protocol:
 
-- The LSST Project will make available a registry of all alert schemata ever used operationally by LSST.
-  Schemata may be retrieved from this registry by some convenient interface given a four-byte schema ID.
+- The LSST Project will make available a registry of all alert schemas ever used operationally by LSST.
+  Schemas may be retrieved from this registry by some convenient interface given a four-byte schema ID.
   Conceptually, this is equivalent to the `Confluent Schema Registry`_, although it is possible an alternative implementation will be deployed in practice.
 - Alerts will be transmitted following the `Confluent Wire Format`_.
   That is, the alert data encoded in Avro format will be prepended with a “magic byte” indicating the version of the wire format in use and the four-byte schema ID.
 - On receipt of an alert packet, the consumer can retrieve the appropriate schema from the registry before attempting to interpret the packet.
   (Consumers are expected to cache the schema, rather than requesting a fresh copy of it for every packet received!)
 
-LSST alert schemata will follow a ``MAJOR.MINOR`` versioning scheme.
+LSST alert schemas will follow a ``MAJOR.MINOR`` versioning scheme.
 
-Within a given ``MAJOR`` version, schemata will follow the ``FORWARD_TRANSITIVE`` type of `Confluent compatibility model`_.
+Within a given ``MAJOR`` version, schemas will follow the ``FORWARD_TRANSITIVE`` type of `Confluent compatibility model`_.
 In this model, data produced by a newer schema can be interpreted by a consumer using an older schema.
 The producer may add fields to the schema (which will not be seen by the consumer) and may delete *optional* fields (in which case the consumer will see the default value).
 In this way, LSST may add to or augment the contents of alert packets without impacting consumers (of course, consumers who wish to take advantage of the new information available will have to upgrade their systems to match the new schema).
@@ -82,7 +82,7 @@ Such a break with compatibility will be signified by the release of a new ``MAJO
 Issuing a new ``MAJOR`` version of the schema will require action on the part of consumers: some data on which they may be relying is no longer available.
 Consumers will have to update their systems to continue following the alert stream.
 
-The Confluent Schema Registry makes it possible for schemata to evolve within a given *subject name* while enforcing the specified compatibility model.
+The Confluent Schema Registry makes it possible for schemas to evolve within a given *subject name* while enforcing the specified compatibility model.
 Thus, a given ``MAJOR`` version of the schema may be published with a particular subject name (for example, ``lsst-alert-N`` for ``MAJOR`` version ``N``); releasing a new major version will necessitate defining a new subject.
 
 .. _Confluent Schema Registry: https://docs.confluent.io/current/schema-registry/docs/index.html
