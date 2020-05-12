@@ -42,11 +42,11 @@ Avro schemas can be composed of nested sub-schemas under a top level namespace.
 Nesting simplifies what would otherwise be monolithic schemas as new fields are added.
 For example, the base alert schema (``lsst.alert``) is of type "record" and includes previous detections of DIA sources as an array of type ``lsst.alert.diaSource``.
 
-The current schema proposed for use with LSST alerts is stored in the `lsst-dm/sample-avro-alert`_ repository.
+The current schema proposed for use with LSST alerts is stored in the `lsst/alert_packet`_ repository.
 This contains all fields specified by the LSST Data Products Definition Document (LSE-163; :cite:`LSE-163`).
 At this stage in construction, this schema should be regarded as exploratory and subject to rapid change; as we move closer to the operational era, a change control process will be implemented.
 
-.. _lsst-dm/sample-avro-alert: https://github.com/lsst-dm/sample-avro-alert
+.. _lsst/alert_packet: https://github.com/lsst/alert_packet
 
 Management and Evolution
 ^^^^^^^^^^^^^^^^^^^^^^^^
