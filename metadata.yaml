@@ -20,6 +20,7 @@ authors:
     - 'Maria Patterson'
     - 'Eric Bellm'
     - 'John Swinbank'
+    - 'Spencer Nelson'
 
 # Current document revision date, YYYY-MM-DD
 # Only set this field if you need to manually fix the revision date;
@@ -36,7 +37,7 @@ authors:
 # doi: 10.5281/zenodo.#####
 
 # Copyright statement
-copyright: '2018, University of Washington'
+copyright: '2021, University of Washington'
 
 # Description. A short, 1-2 sentence statemement used by document indices.
 description: 'We describe the design of the LSST Alert Distribution System, which provides rapid dissemination of alerts as well as simple filtering.'
