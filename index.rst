@@ -47,7 +47,7 @@ At this stage in construction, this schema should be regarded as exploratory and
 
 The current schema proposed for use with LSST alerts is stored in the `lsst/alert_packet`_ repository.
 This primary purpose of this package is to enable generation of alerts during Prompt Processing.
-Versioning of this package with the rest of the Science Pipelines software ensures reproducability.
+Versioning of this package with the rest of the Science Pipelines software ensures reproducibility.
 During operations, users will access the production schemas using other tools (see :ref:`alertManagement`).
 
 .. _lsst/alert_packet: https://github.com/lsst/alert_packet
@@ -85,11 +85,15 @@ All such additions or augmentations to the schema will result in a new ``MINOR``
 
 In some cases, a break with compatibility may be required (for example, when some particular data product is rendered obsolete, deleting the corresponding field from the alert schema will break the ``FORWARD_TRANSITIVE`` compatibility guarantee).
 Such a break with compatibility will be signified by the release of a new ``MAJOR`` version of the schema.
-Issuing a new ``MAJOR`` version of the schema will require action on the part of consumers: some data on which they may be relying is no longer available.
-Consumers will have to update their systems to continue following the alert stream.
+Issuing a new major schema will require that consumers not using the schema registry to manually update their kafka
+deserializer to use the newest schema.
 
-The Confluent Schema Registry makes it possible for schemas to evolve within a given *subject name* while enforcing the specified compatibility model.
-Thus, a given ``MAJOR`` version of the schema may be published with a particular subject name (for example, ``lsst-alert-N`` for ``MAJOR`` version ``N``); releasing a new major version will necessitate defining a new subject.
+The Confluent Schema Registry makes it possible for schemas to evolve within a given *subject name*. New schemas
+added to a given subject name will have a unique id and version number. To maintain a consistent registry history,
+the ``FORWARD_TRANSITIVE`` compatibility is not enforced within the schema. All major and minor
+schema changes are instead given a unique schema id based on the major and minor version defined in `lsst/alert_packet`_.
+For example, schema version 7.1 is given schema id 701. For schema version 13.12, we would have schema id 1312. This allows us to maintain
+consistency so all historical alerts can be read even if the schema registry has to be recreated.
 
 Archival disk space is somewhat less constrained than the outbound bandwidth required for the real-time alert stream.
 To ensure that alerts can be read independently of the Project's Schema Registry, all alerts that we store on disk will include the schema they were written with. 
