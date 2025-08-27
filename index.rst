@@ -13,7 +13,7 @@ Alert Serialization
 Packet Format
 -------------
 
-Alerts are packaged using Apache Avro :cite:`avro`.
+Alerts are packaged using Apache Avro :cite:labelpar:`avro`.
 Avro is a framework for data serialization in a compact binary format.
 It has been used at scale in both industry and science, and it is the recommended format for data streamed with Apache Kafka.
 Avro is more structured in format than JSON or XML, the currently used format of VOEvent 2.0.
@@ -38,7 +38,7 @@ Avro schemas can be composed of nested sub-schemas under a top level namespace.
 Nesting simplifies what would otherwise be monolithic schemas as new fields are added.
 For example, the base alert schema (``lsst.alert``) is of type "record" and includes previous detections of DIA sources as an array of type ``lsst.alert.diaSource``.
 
-The current schemas contain all fields specified by the LSST Data Products Definition Document (:cite:`LSE-163`).
+The current schemas contain all fields specified by the LSST Data Products Definition Document :cite:`LSE-163`.
 At this stage in construction, this schema should be regarded as exploratory and subject to rapid change; as we move closer to the operational era, a change control process will be implemented.
 
 The current schema proposed for use with LSST alerts is stored in the `lsst/alert_packet`_ repository.
@@ -113,7 +113,7 @@ Although we expect to continue to make example alert data available for the inde
 Alert Distribution
 ==================
 
-Alert distribution uses Apache Kafka :cite:`kafka`,
+Alert distribution uses Apache Kafka :cite:labelpar:`kafka`,
 an open source streaming platform
 that can be used for real-time and continuous data pipelines.
 Kafka is a scalable pub/sub message queue based on a commit log.
@@ -138,22 +138,22 @@ maintained by Confluent Inc., the team that created Kafka.
 The latest release of ``alert_stream`` uses Kafka and Zookeeper from
 Confluent platform release 4.1.1, which was the latest version available
 as of the dmtn-081-2018-06-18 tagged release of ``alert_stream``
-used in :cite:`DMTN-081`.
+used in :cite:t:`DMTN-081`.
 As of the writing of this document, Confluent platform release 6.1
 corresponding to Apache Kafka version 2.7 is now available.
 The producer used for generating and sending data to Kafka and
 template scripts for consumers of the stream are provided in the GitHub
 repository at https://github.com/lsst-dm/alert_stream,
 which can also be built as a Docker image and deployed as containers.
-:cite:`DMTN-028`
+:cite:t:`DMTN-028`
 provides details about benchmarking deployment of the different components.
 
 Alert Filtering
 ================
 
 Selected community alert brokers will receive the full LSST alert stream and provide a range of user tools to identify alerts of interest.
-We are currently evaluating technical approaches for LSST-hosted filtering of the alert stream for users with LSST Data Rights (see :cite:`RDO-013`).
-:cite:`DMTN-165` presents one potential option of a "hybrid" system that provides users a lightweight stream containing summaries of *all* alerts.
+We are currently evaluating technical approaches for LSST-hosted filtering of the alert stream for users with LSST Data Rights (see :cite::t:`RDO-013`).
+:cite:t:`DMTN-165` presents one potential option of a "hybrid" system that provides users a lightweight stream containing summaries of *all* alerts.
 Users of the hybrid service could then retrieve the full-sized alerts corresponding to the subset of events of interest from the Alert Database.
 
 Alert Database
@@ -161,7 +161,7 @@ Alert Database
 
 The Alert Database provides an archival record of alerts sent to community alert brokers.
 Users with LSST Data Rights can access the Project-hosted service to retrieve alerts of interest.
-:cite:`DMTN-183` describes the technical design envisioned for the Alert Database.
+:cite:t:`DMTN-183` describes the technical design envisioned for the Alert Database.
 
 Deployment
 ===========
@@ -220,7 +220,7 @@ Expiration of data can be set by a time limit or a storage cap.
 The amount of time we will cache / allow “rewindable” access to the alert
 stream and the number of partitions configured for each topic
 sets requirements on the sizes and number of disks needed for storage.
-See :cite:`DMTN-028` for compute resource recommendations for different scenarios.
+See :cite:t:`DMTN-028` for compute resource recommendations for different scenarios.
 
 .. Make in-text citations with: :cite:`bibkey`.
 
