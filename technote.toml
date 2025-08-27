@@ -1,0 +1,57 @@
+[technote]
+id = "DMTN-093"
+series_id = "DMTN"
+canonical_url = "https://dmtn-093.lsst.io/"
+github_url = "https://github.com/lsst-dm/dmtn-093"
+github_default_branch = "main"
+organization.name = "Vera C. Rubin Observatory"
+organization.ror = "https://ror.org/048g3cy84"
+license.id = "CC-BY-4.0"
+[[technote.authors]]
+name = {given = "Maria T.", family = "Patterson"}
+internal_id = "pattersonmt"
+orcid = "https://orcid.org/0000-0002-4753-3387"
+[[technote.authors.affiliations]]
+name = "University of Washington"
+internal_id = "Washington"
+ror = "https://ror.org/00cvxb145"
+
+[[technote.authors]]
+name = {given = "Eric C.", family = "Bellm"}
+internal_id = "bellme"
+orcid = "https://orcid.org/0000-0001-8018-5348"
+[[technote.authors.affiliations]]
+name = "University of Washington"
+internal_id = "Washington"
+ror = "https://ror.org/00cvxb145"
+
+[[technote.authors]]
+name = {given = "John D.", family = "Swinbank"}
+internal_id = "swinbankjd"
+orcid = "https://orcid.org/0000-0001-9445-1846"
+[[technote.authors.affiliations]]
+name = "ASTRON"
+internal_id = "ASTRON"
+ror = "https://ror.org/000k1q888"
+
+[[technote.authors.affiliations]]
+name = "Princeton University"
+internal_id = "Princeton-Astro"
+ror = "https://ror.org/00hx57361"
+
+[[technote.authors]]
+name = {given = "Spencer", family = "Nelson"}
+internal_id = "nelsons"
+[[technote.authors.affiliations]]
+name = "University of Washington"
+internal_id = "Washington"
+ror = "https://ror.org/00cvxb145"
+
+[[technote.authors]]
+name = {given = "Brianna M.", family = "Smart"}
+internal_id = "smartbm"
+orcid = "https://orcid.org/0000-0002-3677-0571"
+[[technote.authors.affiliations]]
+name = "University of Washington"
+internal_id = "Washington"
+ror = "https://ror.org/00cvxb145"

@@ -1,15 +1,11 @@
-:tocdepth: 1
+############################################
+Design of the LSST Alert Distribution System
+############################################
 
-.. Please do not modify tocdepth; will be fixed when a new Sphinx theme is shipped.
+.. abstract::
 
-.. sectnum::
-
-
-Abstract
-=========
-
-We describe the proposed design and implementation of the LSST Alert Distribution System, which provides rapid dissemination of alerts to community alert brokers.
-At time of writing, this service is still under development; this “living document” describes current thinking, but is expected to evolve over the course of LSST construction.
+  We describe the proposed design and implementation of the LSST Alert Distribution System, which provides rapid dissemination of alerts to community alert brokers.
+  At time of writing, this service is still under development; this “living document” describes current thinking, but is expected to evolve over the course of LSST construction.
 
 Alert Serialization
 ===================
@@ -21,7 +17,7 @@ Alerts are packaged using Apache Avro :cite:`avro`.
 Avro is a framework for data serialization in a compact binary format.
 It has been used at scale in both industry and science, and it is the recommended format for data streamed with Apache Kafka.
 Avro is more structured in format than JSON or XML, the currently used format of VOEvent 2.0.
-Furthermore, image — or other — files can be embedded in Avro packets, making it possible to embed postage stamp cutouts of detected difference image sources in a much more compact and convenient way than the current VOEvent standard.
+Furthermore, image — or other — files can be embedded in Avro packets, making it possible to embed postage stamp cutouts of detected difference image sources in a much more compact and convenient way than the current VOEvent standard.
 Libraries for reading and writing Avro are available in many languages, including Python.
 
 Each alert is packaged as its own Avro packet, as opposed to wrapping groups of alerts per visit together.
@@ -96,7 +92,7 @@ For example, schema version 7.1 is given schema id 701. For schema version 13.12
 consistency so all historical alerts can be read even if the schema registry has to be recreated.
 
 Archival disk space is somewhat less constrained than the outbound bandwidth required for the real-time alert stream.
-To ensure that alerts can be read independently of the Project's Schema Registry, all alerts that we store on disk will include the schema they were written with. 
+To ensure that alerts can be read independently of the Project's Schema Registry, all alerts that we store on disk will include the schema they were written with.
 For convenience and efficiency we will frequently store many alerts together in single Avro files sharing a single schema.
 Users can then read these files directly with existing Avro libraries.
 
@@ -157,7 +153,7 @@ Alert Filtering
 
 Selected community alert brokers will receive the full LSST alert stream and provide a range of user tools to identify alerts of interest.
 We are currently evaluating technical approaches for LSST-hosted filtering of the alert stream for users with LSST Data Rights (see :cite:`RDO-013`).
-:cite:`DMTN-165` presents one potential option of a "hybrid" system that provides users a lightweight stream containing summaries of *all* alerts. 
+:cite:`DMTN-165` presents one potential option of a "hybrid" system that provides users a lightweight stream containing summaries of *all* alerts.
 Users of the hybrid service could then retrieve the full-sized alerts corresponding to the subset of events of interest from the Alert Database.
 
 Alert Database
@@ -172,14 +168,11 @@ Deployment
 
 Deployment scripts for deploying a full mini-broker configuration
 (a producer, central Kafka instance, filtering Kafka instances,
-filters, and consumers) are available in the `lsst_dm/alert_stream`_ repo.
+filters, and consumers) are available in the `lsst_dm/alert_stream <https://github.com/lsst-dm/alert_stream>`_ repo.
 These scripts are specifically for a deployment using Docker Swarm or Kubernetes.
 Complete instructions for deploying on an AWS CloudFormation cluster
 are included with the deployment scripts in the swarm directory
 of alert_stream.
-
-
-.. _lsst-dm/alert_stream: https://github.com/lsst-dm/alert_stream
 
 Remaining Work
 ===============
@@ -214,7 +207,7 @@ week without reprocessing all alerts available since then.
 Daily topics also make expiring nights of data straightforward
 instead of ending up expiring data somewhere in the middle
 of the night.
-However, daily topics require more manual management by downstream consumers, and large numbers of Kafka topics can create stability issues. 
+However, daily topics require more manual management by downstream consumers, and large numbers of Kafka topics can create stability issues.
 Further investigation and discussion with community alert brokers are warranted.
 
 * For how long should we persist streams?
@@ -229,9 +222,6 @@ stream and the number of partitions configured for each topic
 sets requirements on the sizes and number of disks needed for storage.
 See :cite:`DMTN-028` for compute resource recommendations for different scenarios.
 
-.. .. rubric:: References
-
 .. Make in-text citations with: :cite:`bibkey`.
 
-.. bibliography:: local.bib lsstbib/books.bib lsstbib/lsst.bib lsstbib/lsst-dm.bib lsstbib/refs.bib lsstbib/refs_ads.bib
-    :style: lsst_aa
+.. bibliography::
