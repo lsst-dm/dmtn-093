@@ -1,15 +1,18 @@
-:tocdepth: 1
+############################################
+Design of the LSST Alert Distribution System
+############################################
 
-.. Please do not modify tocdepth; will be fixed when a new Sphinx theme is shipped.
+.. image:: https://img.shields.io/badge/DOI-10.71929/rubin/2586493-blue.svg
+  :target: https://doi.org/10.71929/rubin/2586493
+  :alt: DOI: 10.71929/rubin/2586493
+  :height: 16
 
-.. sectnum::
+.. abstract::
 
+  We describe the proposed design and implementation of the LSST Alert Distribution System, which provides rapid dissemination of alerts to community alert brokers.
+  At time of writing, this service is still under development; this “living document” describes current thinking, but is expected to evolve over the course of LSST construction.
 
-Abstract
-=========
-
-We describe the proposed design and implementation of the LSST Alert Distribution System, which provides rapid dissemination of alerts to community alert brokers.
-At time of writing, this service is still under development; this “living document” describes current thinking, but is expected to evolve over the course of LSST construction.
+**DOI:** `10.71929/rubin/2586493 <https://doi.org/10.71929/rubin/2586493>`_
 
 Alert Serialization
 ===================
@@ -17,11 +20,11 @@ Alert Serialization
 Packet Format
 -------------
 
-Alerts are packaged using Apache Avro :cite:`avro`.
+Alerts are packaged using Apache Avro :cite:labelpar:`avro`.
 Avro is a framework for data serialization in a compact binary format.
 It has been used at scale in both industry and science, and it is the recommended format for data streamed with Apache Kafka.
 Avro is more structured in format than JSON or XML, the currently used format of VOEvent 2.0.
-Furthermore, image — or other — files can be embedded in Avro packets, making it possible to embed postage stamp cutouts of detected difference image sources in a much more compact and convenient way than the current VOEvent standard.
+Furthermore, image — or other — files can be embedded in Avro packets, making it possible to embed postage stamp cutouts of detected difference image sources in a much more compact and convenient way than the current VOEvent standard.
 Libraries for reading and writing Avro are available in many languages, including Python.
 
 Each alert is packaged as its own Avro packet, as opposed to wrapping groups of alerts per visit together.
@@ -42,7 +45,7 @@ Avro schemas can be composed of nested sub-schemas under a top level namespace.
 Nesting simplifies what would otherwise be monolithic schemas as new fields are added.
 For example, the base alert schema (``lsst.alert``) is of type "record" and includes previous detections of DIA sources as an array of type ``lsst.alert.diaSource``.
 
-The current schemas contain all fields specified by the LSST Data Products Definition Document (:cite:`LSE-163`).
+The current schemas contain all fields specified by the LSST Data Products Definition Document :cite:`LSE-163`.
 At this stage in construction, this schema should be regarded as exploratory and subject to rapid change; as we move closer to the operational era, a change control process will be implemented.
 
 The current schema proposed for use with LSST alerts is stored in the `lsst/alert_packet`_ repository.
@@ -96,7 +99,7 @@ For example, schema version 7.1 is given schema id 701. For schema version 13.12
 consistency so all historical alerts can be read even if the schema registry has to be recreated.
 
 Archival disk space is somewhat less constrained than the outbound bandwidth required for the real-time alert stream.
-To ensure that alerts can be read independently of the Project's Schema Registry, all alerts that we store on disk will include the schema they were written with. 
+To ensure that alerts can be read independently of the Project's Schema Registry, all alerts that we store on disk will include the schema they were written with.
 For convenience and efficiency we will frequently store many alerts together in single Avro files sharing a single schema.
 Users can then read these files directly with existing Avro libraries.
 
@@ -117,7 +120,7 @@ Although we expect to continue to make example alert data available for the inde
 Alert Distribution
 ==================
 
-Alert distribution uses Apache Kafka :cite:`kafka`,
+Alert distribution uses Apache Kafka :cite:labelpar:`kafka`,
 an open source streaming platform
 that can be used for real-time and continuous data pipelines.
 Kafka is a scalable pub/sub message queue based on a commit log.
@@ -142,22 +145,22 @@ maintained by Confluent Inc., the team that created Kafka.
 The latest release of ``alert_stream`` uses Kafka and Zookeeper from
 Confluent platform release 4.1.1, which was the latest version available
 as of the dmtn-081-2018-06-18 tagged release of ``alert_stream``
-used in :cite:`DMTN-081`.
+used in :cite:t:`DMTN-081`.
 As of the writing of this document, Confluent platform release 6.1
 corresponding to Apache Kafka version 2.7 is now available.
 The producer used for generating and sending data to Kafka and
 template scripts for consumers of the stream are provided in the GitHub
 repository at https://github.com/lsst-dm/alert_stream,
 which can also be built as a Docker image and deployed as containers.
-:cite:`DMTN-028`
+:cite:t:`DMTN-028`
 provides details about benchmarking deployment of the different components.
 
 Alert Filtering
 ================
 
 Selected community alert brokers will receive the full LSST alert stream and provide a range of user tools to identify alerts of interest.
-We are currently evaluating technical approaches for LSST-hosted filtering of the alert stream for users with LSST Data Rights (see :cite:`RDO-013`).
-:cite:`DMTN-165` presents one potential option of a "hybrid" system that provides users a lightweight stream containing summaries of *all* alerts. 
+We are currently evaluating technical approaches for LSST-hosted filtering of the alert stream for users with LSST Data Rights (see :cite::t:`RDO-013`).
+:cite:t:`DMTN-165` presents one potential option of a "hybrid" system that provides users a lightweight stream containing summaries of *all* alerts.
 Users of the hybrid service could then retrieve the full-sized alerts corresponding to the subset of events of interest from the Alert Database.
 
 Alert Database
@@ -165,21 +168,18 @@ Alert Database
 
 The Alert Database provides an archival record of alerts sent to community alert brokers.
 Users with LSST Data Rights can access the Project-hosted service to retrieve alerts of interest.
-:cite:`DMTN-183` describes the technical design envisioned for the Alert Database.
+:cite:t:`DMTN-183` describes the technical design envisioned for the Alert Database.
 
 Deployment
 ===========
 
 Deployment scripts for deploying a full mini-broker configuration
 (a producer, central Kafka instance, filtering Kafka instances,
-filters, and consumers) are available in the `lsst_dm/alert_stream`_ repo.
+filters, and consumers) are available in the `lsst_dm/alert_stream <https://github.com/lsst-dm/alert_stream>`_ repo.
 These scripts are specifically for a deployment using Docker Swarm or Kubernetes.
 Complete instructions for deploying on an AWS CloudFormation cluster
 are included with the deployment scripts in the swarm directory
 of alert_stream.
-
-
-.. _lsst-dm/alert_stream: https://github.com/lsst-dm/alert_stream
 
 Remaining Work
 ===============
@@ -189,49 +189,46 @@ resilience, how users interface with the system, and
 feasibility of some "desirements."
 Below are a few (non-exhaustive) outstanding questions and thoughts.
 
-* How can we make the system resilient to a node going down?
+* **How can we make the system resilient to a node going down?**
 
-It is probable that we will use Kafka in cluster mode and
-take advantage of consumer groups.
+  It is probable that we will use Kafka in cluster mode and
+  take advantage of consumer groups.
 
-* How do we back up alerts?
+* **How do we back up alerts?**
 
-Containers running Kafka should not use local storage (inside the
-container) to store alerts but should use volume mounted disk.
-Storage should be mounted to the /var/lib/kafka/data directory
-inside the container.
-If using Kafka in cluster mode, replication to > 1 can be set.
-The volume mounted disk should also be backed up for as long as
-data needs to be kept accessible via Kafka.
+  Containers running Kafka should not use local storage (inside the
+  container) to store alerts but should use volume mounted disk.
+  Storage should be mounted to the /var/lib/kafka/data directory
+  inside the container.
+  If using Kafka in cluster mode, replication to > 1 can be set.
+  The volume mounted disk should also be backed up for as long as
+  data needs to be kept accessible via Kafka.
 
-* How should we organize streams/topics?
+* **How should we organize streams/topics?**
 
-It makes sense to create a new topic on a daily basis to make
-it straightforward for downstream consumers to listen to
-a night's worth of data, separate data of interest, and not
-overwhelm consumers who want to, e.g., replay a night from last
-week without reprocessing all alerts available since then.
-Daily topics also make expiring nights of data straightforward
-instead of ending up expiring data somewhere in the middle
-of the night.
-However, daily topics require more manual management by downstream consumers, and large numbers of Kafka topics can create stability issues. 
-Further investigation and discussion with community alert brokers are warranted.
+  It makes sense to create a new topic on a daily basis to make
+  it straightforward for downstream consumers to listen to
+  a night's worth of data, separate data of interest, and not
+  overwhelm consumers who want to, e.g., replay a night from last
+  week without reprocessing all alerts available since then.
+  Daily topics also make expiring nights of data straightforward
+  instead of ending up expiring data somewhere in the middle
+  of the night.
+  However, daily topics require more manual management by downstream consumers, and large numbers of Kafka topics can create stability issues.
+  Further investigation and discussion with community alert brokers are warranted.
 
-* For how long should we persist streams?
+* **For how long should we persist streams?**
 
-This is also partially a policy question.
-The default setting in Kafka is to persist data for one week,
-so topics older than one week could be removed.
-(The topics will still exist unless deleted, but they will contain no alerts.)
-Expiration of data can be set by a time limit or a storage cap.
-The amount of time we will cache / allow “rewindable” access to the alert
-stream and the number of partitions configured for each topic
-sets requirements on the sizes and number of disks needed for storage.
-See :cite:`DMTN-028` for compute resource recommendations for different scenarios.
-
-.. .. rubric:: References
+  This is also partially a policy question.
+  The default setting in Kafka is to persist data for one week,
+  so topics older than one week could be removed.
+  (The topics will still exist unless deleted, but they will contain no alerts.)
+  Expiration of data can be set by a time limit or a storage cap.
+  The amount of time we will cache / allow “rewindable” access to the alert
+  stream and the number of partitions configured for each topic
+  sets requirements on the sizes and number of disks needed for storage.
+  See :cite:t:`DMTN-028` for compute resource recommendations for different scenarios.
 
 .. Make in-text citations with: :cite:`bibkey`.
 
-.. bibliography:: local.bib lsstbib/books.bib lsstbib/lsst.bib lsstbib/lsst-dm.bib lsstbib/refs.bib lsstbib/refs_ads.bib
-    :style: lsst_aa
+.. bibliography::
