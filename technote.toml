@@ -8,6 +8,7 @@ organization.name = "Vera C. Rubin Observatory"
 organization.ror = "https://ror.org/048g3cy84"
 license.id = "CC-BY-4.0"
 date_created = 2018-09-11T17:21:02Z
+date_updated = 2024-08-23T21:41:44Z
 [[technote.authors]]
 name = {given = "Maria T.", family = "Patterson"}
 internal_id = "pattersonmt"
