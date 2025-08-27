@@ -2,10 +2,17 @@
 Design of the LSST Alert Distribution System
 ############################################
 
+.. image:: https://img.shields.io/badge/DOI-10.71929/rubin/2586493-blue.svg
+  :target: https://doi.org/10.71929/rubin/2586493
+  :alt: DOI: 10.71929/rubin/2586493
+  :height: 16
+
 .. abstract::
 
   We describe the proposed design and implementation of the LSST Alert Distribution System, which provides rapid dissemination of alerts to community alert brokers.
   At time of writing, this service is still under development; this “living document” describes current thinking, but is expected to evolve over the course of LSST construction.
+
+**DOI:** `10.71929/rubin/2586493 <https://doi.org/10.71929/rubin/2586493>`_
 
 Alert Serialization
 ===================
