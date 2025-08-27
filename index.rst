@@ -182,45 +182,45 @@ resilience, how users interface with the system, and
 feasibility of some "desirements."
 Below are a few (non-exhaustive) outstanding questions and thoughts.
 
-* How can we make the system resilient to a node going down?
+* **How can we make the system resilient to a node going down?**
 
-It is probable that we will use Kafka in cluster mode and
-take advantage of consumer groups.
+  It is probable that we will use Kafka in cluster mode and
+  take advantage of consumer groups.
 
-* How do we back up alerts?
+* **How do we back up alerts?**
 
-Containers running Kafka should not use local storage (inside the
-container) to store alerts but should use volume mounted disk.
-Storage should be mounted to the /var/lib/kafka/data directory
-inside the container.
-If using Kafka in cluster mode, replication to > 1 can be set.
-The volume mounted disk should also be backed up for as long as
-data needs to be kept accessible via Kafka.
+  Containers running Kafka should not use local storage (inside the
+  container) to store alerts but should use volume mounted disk.
+  Storage should be mounted to the /var/lib/kafka/data directory
+  inside the container.
+  If using Kafka in cluster mode, replication to > 1 can be set.
+  The volume mounted disk should also be backed up for as long as
+  data needs to be kept accessible via Kafka.
 
-* How should we organize streams/topics?
+* **How should we organize streams/topics?**
 
-It makes sense to create a new topic on a daily basis to make
-it straightforward for downstream consumers to listen to
-a night's worth of data, separate data of interest, and not
-overwhelm consumers who want to, e.g., replay a night from last
-week without reprocessing all alerts available since then.
-Daily topics also make expiring nights of data straightforward
-instead of ending up expiring data somewhere in the middle
-of the night.
-However, daily topics require more manual management by downstream consumers, and large numbers of Kafka topics can create stability issues.
-Further investigation and discussion with community alert brokers are warranted.
+  It makes sense to create a new topic on a daily basis to make
+  it straightforward for downstream consumers to listen to
+  a night's worth of data, separate data of interest, and not
+  overwhelm consumers who want to, e.g., replay a night from last
+  week without reprocessing all alerts available since then.
+  Daily topics also make expiring nights of data straightforward
+  instead of ending up expiring data somewhere in the middle
+  of the night.
+  However, daily topics require more manual management by downstream consumers, and large numbers of Kafka topics can create stability issues.
+  Further investigation and discussion with community alert brokers are warranted.
 
-* For how long should we persist streams?
+* **For how long should we persist streams?**
 
-This is also partially a policy question.
-The default setting in Kafka is to persist data for one week,
-so topics older than one week could be removed.
-(The topics will still exist unless deleted, but they will contain no alerts.)
-Expiration of data can be set by a time limit or a storage cap.
-The amount of time we will cache / allow “rewindable” access to the alert
-stream and the number of partitions configured for each topic
-sets requirements on the sizes and number of disks needed for storage.
-See :cite:t:`DMTN-028` for compute resource recommendations for different scenarios.
+  This is also partially a policy question.
+  The default setting in Kafka is to persist data for one week,
+  so topics older than one week could be removed.
+  (The topics will still exist unless deleted, but they will contain no alerts.)
+  Expiration of data can be set by a time limit or a storage cap.
+  The amount of time we will cache / allow “rewindable” access to the alert
+  stream and the number of partitions configured for each topic
+  sets requirements on the sizes and number of disks needed for storage.
+  See :cite:t:`DMTN-028` for compute resource recommendations for different scenarios.
 
 .. Make in-text citations with: :cite:`bibkey`.
 
